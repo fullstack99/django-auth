@@ -1,0 +1,13 @@
+{% extends "register/main_template.html" %}
+{% block content %}
+	<div class="container">
+		<div class="row justify-content-center">
+			<div class="col-8">
+				<div class="alert alert-success" role="alert'">
+					<h4 class="alert-heading">Success</h4>
+					<p>Login User: <strong>{{user.first_name}} {{user.last_name}}</strong></p>
+				</div>
+			</div>
+		</div>
+	</div>
+{% endblock %}
