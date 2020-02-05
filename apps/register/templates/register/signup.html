@@ -69,7 +69,6 @@
                 dataType: 'json',
                 type: "POST",
                 success: function (success) {
-                    console.log(11, success.tag)
                     if (success.tag.includes('first_name')) {
                         formatText()
                         $(".first_name_error").text(success.message)
