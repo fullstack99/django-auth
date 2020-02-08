@@ -13,6 +13,9 @@ def index(request):
         return render(request, 'register/index.html')
 
 def register(request):
+    if request.session._session:
+        return redirect('/success')
+
     if request.method == "POST":
         errors = User.objects.validator(request.POST)
         if len(errors):
@@ -39,6 +42,9 @@ def register(request):
         return render(request, 'register/signup.html')
 
 def login(request):
+    if request.session._session:
+        return redirect('/success')
+
     if request.method == "POST":
         if (User.objects.filter(email=request.POST['login_email']).exists()):
             user = User.objects.filter(email=request.POST['login_email'])[0]
@@ -57,11 +63,14 @@ def login(request):
         return render(request, 'register/login.html')
 
 def success(request):
-    user = User.objects.get(id=request.session['id'])
-    context = {
-        "user": user
-    }
-    return render(request, 'register/success.html', context)
+    if request.session._session:
+        user = User.objects.get(id=request.session['id'])
+        context = {
+            "user": user
+        }
+        return render(request, 'register/success.html', context)
+    else:
+        return redirect('/')
 
 def logout_view(request):
     logout(request)
