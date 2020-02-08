@@ -4,3 +4,5 @@ __pycache__
 */*.pyc
 */*/*.pyc
 .env
+apps/*/__pycache__
+db.sqlite3

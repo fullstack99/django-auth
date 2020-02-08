@@ -1,12 +1,16 @@
 from django.shortcuts import render, HttpResponse, redirect
 from django.contrib import messages
+from django.contrib.auth import logout
 from django.http import JsonResponse
 import bcrypt
 import json
 from .models import User
 
 def index(request):
-    return render(request, 'register/index.html')
+    if request.session._session:
+        return redirect('/success')
+    else:
+        return render(request, 'register/index.html')
 
 def register(request):
     if request.method == "POST":
@@ -58,3 +62,7 @@ def success(request):
         "user": user
     }
     return render(request, 'register/success.html', context)
+
+def logout_view(request):
+    logout(request)
+    return redirect('/login')

@@ -6,8 +6,6 @@ from email_validator import validate_email, EmailNotValidError
 class UserManager(models.Manager):
     def validator(self, postData):
         errors = {}
-        is_valid = validate_email("admin@admin.com")
-        print(is_valid)
         if len(postData['first_name']) < 2:
             errors['first_name'] = "First name can not be shorter than 2 characters"
             pass
@@ -20,7 +18,7 @@ class UserManager(models.Manager):
             errors['email'] = "You must enter an email"
             pass
         try:
-            valid_info = validate_email(postData['email'])
+            valid_info = validate_email(postData['email'], allow_smtputf8=False)
             email = valid_info["email"]
         except EmailNotValidError as e:
             errors['email'] = str(e)
