@@ -12,13 +12,20 @@
                                 <label>Email</label>
                                 <input name="login_email" type="text" class="form-control">
                             </div>
+                            {% if messages %}
+                            {%for message in messages %}
+                            {%if "email" in message.tags %}
+                            <div class="form-group has-danger">
+                                <div class="form-control-feedback">{{message}}</div>
+                            </div>
+                            {%endif%} {%endfor%} {% endif %}
                             <div class="form-group">
                                 <label>Password</label>
                                 <input name="login_password" type="password" class="form-control">
                             </div>
                             {% if messages %}
                             {%for message in messages %}
-                            {%if "email" in message.tags %}
+                            {%if "pass" in message.tags %}
                             <div class="form-group has-danger">
                                 <div class="form-control-feedback">{{message}}</div>
                             </div>

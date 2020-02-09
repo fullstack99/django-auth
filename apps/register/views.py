@@ -46,6 +46,7 @@ def login(request):
         return redirect('/success')
 
     if request.method == "POST":
+        errors = {}
         if (User.objects.filter(email=request.POST['login_email']).exists()):
             user = User.objects.filter(email=request.POST['login_email'])[0]
             hashed_pass = bcrypt.hashpw(request.POST['login_password'].encode('utf-8'), bcrypt.gensalt())
@@ -54,8 +55,10 @@ def login(request):
                 request.session['id'] = user.id
                 return redirect('/success')
 
-        errors = {}
-        errors['email'] = "Email or password is wrong."
+            errors['pass'] = "Password is wrong."
+        else:
+            errors['email'] = "Email is wrong."
+
         for tag, error in errors.items():
             messages.error(request, error, extra_tags=tag)
             return redirect('/login')
