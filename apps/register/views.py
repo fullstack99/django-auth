@@ -5,6 +5,7 @@ from django.http import JsonResponse
 from datetime import datetime, timedelta
 import bcrypt
 import jwt, json
+
 from .models import User
 from .form import userForm
 
@@ -12,7 +13,7 @@ def index(request):
     if request.session._session:
         return redirect('/success')
     else:
-        return render(request, 'register/index.html')
+        return render(request, 'index.html')
 
 def register(request):
     if request.session._session:
@@ -50,7 +51,7 @@ def register(request):
             "tag": "success"
         })
     else:
-        return render(request, 'register/signup.html')
+        return render(request, 'auth/signup.html')
 
 def login(request):
     if request.session._session:
@@ -76,7 +77,7 @@ def login(request):
             messages.error(request, error, extra_tags=tag)
             return redirect('/login')
     else:
-        return render(request, 'register/login.html')
+        return render(request, 'auth/login.html')
 
 def success(request):
     if request.session._session:
@@ -93,11 +94,20 @@ def success(request):
             token = createJWT(user)
 
         context = {
-            "user": user,
+            "currentUser": user,
             "token": token
         }
         request.session['token'] = token
-        return render(request, 'register/success.html', context)
+
+        if user.permission == 'admin':
+            allUsers = User.objects.all()
+            context = {
+                "currentUser": user,
+                "token": token,
+                "users": allUsers
+            }
+
+        return render(request, 'dashboard.html', context)
     else:
         return redirect('/')
 
@@ -121,15 +131,74 @@ def userUpdate(request):
     context = {
         "user": user,
     }
+    errors = {}
     if request.method == "POST":
+        user.dob = request.POST['dob']
+        user.first_name = request.POST['first_name']
+        user.last_name = request.POST['last_name']
+        if user.email != request.POST['email']:
+            exist_user = User.objects.filter(email=request.POST['email'])
+            if exist_user:
+                errors['email'] = "This emails already exits."
+                for tag, error in errors.items():
+                    messages.error(request, error, extra_tags=tag)
+                    return redirect('/user/update')
+
+        user.email = request.POST['email']
+
         MyProfileForm = userForm(request.POST, request.FILES)
         if MyProfileForm.is_valid():
             user.picture = MyProfileForm.cleaned_data["picture"]
-            user.dob = request.POST['dob']
-            user.first_name = request.POST['first_name']
-            user.last_name = request.POST['last_name']
-            user.email = request.POST['email']
-            user.save()
-            return redirect('/success')
+
+        user.save()
+
+        return redirect('/success')
     else:
-        return render(request, 'user/create.html', context)
+        return render(request, 'user/update.html', context)
+
+def userCreate(request):
+    if request.method == "POST":
+        errors = User.objects.validator(request.POST)
+        if len(errors):
+            for tag, error in errors.items():
+                messages.error(request, error, extra_tags=tag)
+            error_messages = messages.get_messages(request)
+            for error_message in error_messages:
+                message = error_message.message
+
+                return JsonResponse({
+                    "tag": error_message.tags,
+                    "message": message
+                })
+
+        exist_user = User.objects.filter(email=request.POST['email'])
+        if exist_user:
+            return JsonResponse({
+                "tag": "email",
+                "message": "This Email exists already"
+            })
+
+        hashed_password = bcrypt.hashpw(request.POST['password'].encode('utf-8'), bcrypt.gensalt())
+        user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], password=hashed_password, email=request.POST['email'])
+        user.save()
+
+        return JsonResponse({
+            "tag": "success"
+        })
+    else:
+        return render(request, 'user/create.html')
+
+def userDelete(request, user_id):
+    saved = False
+    user = User.objects.get(id=user_id)
+    response = {
+        "success": True
+    }
+    try:
+        user.delete()
+    except:
+        response = {
+            "success": False
+        }
+
+    return redirect('/success')

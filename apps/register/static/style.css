@@ -21,3 +21,7 @@
     display: flex !important;
     margin: 0 auto !important;
 }
+.btn-create-user {
+    text-align: right;
+    margin-bottom: 15px;
+}
