@@ -6,6 +6,7 @@ from datetime import datetime, timedelta
 import bcrypt
 import jwt, json
 from .models import User
+from .form import userForm
 
 def index(request):
     if request.session._session:
@@ -108,7 +109,27 @@ def createJWT(user):
     payload = {
         'id': user.id,
         'email': user.email,
+        'first_name': user.first_name,
+        'last_name': user.last_name,
         'exp': datetime.utcnow() + timedelta(minutes=30)
     }
     jwt_token = {'token': jwt.encode(payload, "SECRET_KEY")}
     return jwt_token["token"].decode("utf-8")
+
+def userUpdate(request):
+    user = User.objects.get(id=request.session['id'])
+    context = {
+        "user": user,
+    }
+    if request.method == "POST":
+        MyProfileForm = userForm(request.POST, request.FILES)
+        if MyProfileForm.is_valid():
+            user.picture = MyProfileForm.cleaned_data["picture"]
+            user.dob = request.POST['dob']
+            user.first_name = request.POST['first_name']
+            user.last_name = request.POST['last_name']
+            user.email = request.POST['email']
+            user.save()
+            return redirect('/success')
+    else:
+        return render(request, 'user/create.html', context)

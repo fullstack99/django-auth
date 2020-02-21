@@ -1,14 +1,31 @@
 {% extends "register/main_template.html" %}
 {% block content %}
-	<div class="container">
-		<div class="row justify-content-center">
-			<div class="col-8">
-				<div class="alert alert-success" role="alert'">
-					<h4 class="alert-heading">Success</h4>
-					<p>Login User: <strong>{{user.first_name}} {{user.last_name}}</strong></p>
-					<a href="logout">Logout</a>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+	<a class="navbar-brand" href="/">Navbar</a>
+	<button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+		aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+		<span class="navbar-toggler-icon"></span>
+	</button>
+
+	<div class="collapse navbar-collapse" id="navbarSupportedContent">
+		<ul class="navbar-nav mr-auto">
+			<li class="nav-item active">
+				<a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+			</li>
+		</ul>
+		<ul class="navbar-nav">
+			<li class="nav-item dropdown">
+				<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown"
+					aria-haspopup="true" aria-expanded="false">
+					<strong>{{user.first_name}} {{user.last_name}}</strong>
+				</a>
+				<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+					<a class="dropdown-item" href="user/update">Profile</a>
+					<div class="dropdown-divider"></div>
+					<a class="dropdown-item" href="logout">Logout</a>
 				</div>
-			</div>
-		</div>
+			</li>
+		</ul>
 	</div>
+</nav>
 {% endblock %}

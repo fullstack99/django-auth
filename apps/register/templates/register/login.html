@@ -15,7 +15,7 @@
                             {% if messages %}
                             {%for message in messages %}
                             {%if "email" in message.tags %}
-                            <div class="form-group has-danger">
+                            <div class="form-group text-danger">
                                 <div class="form-control-feedback">{{message}}</div>
                             </div>
                             {%endif%} {%endfor%} {% endif %}
@@ -26,7 +26,7 @@
                             {% if messages %}
                             {%for message in messages %}
                             {%if "pass" in message.tags %}
-                            <div class="form-group has-danger">
+                            <div class="form-group text-danger">
                                 <div class="form-control-feedback">{{message}}</div>
                             </div>
                             {%endif%} {%endfor%} {% endif %}
