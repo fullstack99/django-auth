@@ -15,9 +15,7 @@
         <v-text-field
           v-model="password"
           :rules="passwordRules"
-          name="input-10-2"
           label="Password"
-          hint="At least 8 characters"
           required
         ></v-text-field>
         <v-btn
@@ -34,7 +32,7 @@
 <script>
   export default {
     data: () => ({
-      valid: true,
+      valid: false,
       email: '',
       emailRules: [
         v => !!v || 'E-mail is required',
@@ -42,15 +40,14 @@
       ],
       password: '',
       passwordRules: [
-        v => !!v || 'Password is required',
-        v => (v && v.length >= 8) || 'Password must be more than 8 characters',
+        v => !!v || 'Password is required'
       ],
     }),
 
     methods: {
       login () {
         if (this.$refs.form.validate()) {
-          this.snackbar = true
+          this.valid = true
         }
       },
     },
