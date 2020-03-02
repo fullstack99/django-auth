@@ -1,8 +1,6 @@
 .vscode
-__pycache__
-*.pyc
-*/*.pyc
-*/*/*.pyc
-.env
-apps/*/__pycache__
-db.sqlite3
+backend/__pycache__
+backend/**/*.pyc
+backend/.env
+backend/**/__pycache__
+backend/db.sqlite3
