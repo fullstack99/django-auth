@@ -6,25 +6,38 @@
         v-model="valid"
         lazy-validation
       >
-        <v-text-field
-          v-model="email"
-          :rules="emailRules"
-          label="E-mail"
-          required
-        ></v-text-field>
-        <v-text-field
-          v-model="password"
-          :rules="passwordRules"
-          label="Password"
-          required
-        ></v-text-field>
-        <v-btn
-          :disabled="!valid"
-          color="success"
-          @click="login"
-        >
-          Login
-        </v-btn>
+      <v-container>
+        <v-row>
+          <v-col cols="12">
+            <v-text-field
+              v-model="email"
+              :rules="emailRules"
+              prepend-inner-icon="mdi-email"
+              label="E-mail"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-text-field
+              v-model="password"
+              :rules="passwordRules"
+              prepend-inner-icon="mdi-key"
+              label="Password"
+              required
+            ></v-text-field>
+          </v-col>
+          <v-col cols="12">
+            <v-btn
+              :disabled="!valid"
+              color="success"
+              @click="login"
+            >
+              Login
+            </v-btn>
+            <router-link to="/register" class="btn btn-register">Sign Up</router-link>
+          </v-col>
+        </v-row>
+      </v-container>
       </v-form>
     </v-card>
   </div>
@@ -65,5 +78,10 @@
   padding: 10px;
   max-width: 100%;
   text-align: center;
+}
+.btn-register {
+  text-decoration: none;
+  margin-left: 15px;
+  color: #757575;
 }
 </style>
