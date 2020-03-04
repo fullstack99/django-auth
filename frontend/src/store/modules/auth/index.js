@@ -5,7 +5,8 @@ import * as getters from "./getters";
 const initialState = {
   user: {},
   error: null,
-  status: null
+  status: null,
+  authenticated: false
 };
 
 export default {
