@@ -3,6 +3,8 @@ from django.contrib import messages
 from django.contrib.auth import logout
 from django.http import JsonResponse
 from datetime import datetime, timedelta
+from django.core import serializers
+
 import bcrypt
 import jwt, json
 
@@ -16,68 +18,66 @@ def index(request):
         return render(request, 'index.html')
 
 def register(request):
-    if request.session._session:
-        return redirect('/success')
-
-    if request.method == "POST":
-        errors = User.objects.validator(request.POST)
-        if len(errors):
-            for tag, error in errors.items():
-                messages.error(request, error, extra_tags=tag)
-            error_messages = messages.get_messages(request)
-            for error_message in error_messages:
-                message = error_message.message
-
-                return JsonResponse({
-                    "tag": error_message.tags,
-                    "message": message
-                })
-
-        exist_user = User.objects.filter(email=request.POST['email'])
-        if exist_user:
-            return JsonResponse({
-                "tag": "email",
-                "message": "This Email exists already"
-            })
-
-        hashed_password = bcrypt.hashpw(request.POST['password'].encode('utf-8'), bcrypt.gensalt())
-        user = User.objects.create(first_name=request.POST['first_name'], last_name=request.POST['last_name'], password=hashed_password, email=request.POST['email'])
-        user.save()
-
-        token = createJWT(user)
-        request.session['token'] = token
-        request.session['id'] = user.id
-        return JsonResponse({
-            "tag": "success"
-        })
-    else:
-        return render(request, 'auth/signup.html')
-
-def login(request):
-    if request.session._session:
-        return redirect('/success')
-
-    if request.method == "POST":
-        errors = {}
-        if (User.objects.filter(email=request.POST['login_email']).exists()):
-            user = User.objects.filter(email=request.POST['login_email'])[0]
-            hashed_pass = bcrypt.hashpw(request.POST['login_password'].encode('utf-8'), bcrypt.gensalt())
-            password = user.password[2: -1]
-            if (bcrypt.checkpw(request.POST['login_password'].encode('utf-8'), password.encode())):
-                request.session['id'] = user.id
-                token = createJWT(user)
-                request.session['token'] = token
-                return redirect('/success')
-
-            errors['pass'] = "Password is wrong."
-        else:
-            errors['email'] = "Email is wrong."
-
+    json_data = json.loads(request.body)
+    errors = User.objects.validator(json_data)
+    if len(errors):
         for tag, error in errors.items():
             messages.error(request, error, extra_tags=tag)
-            return redirect('/login')
+        error_messages = messages.get_messages(request)
+        for error_message in error_messages:
+            message = error_message.message
+
+            return JsonResponse({
+                "error": message
+            }, status=400)
+
+    exist_user = User.objects.filter(email=json_data['email'])
+    if exist_user:
+        return JsonResponse({
+            "error": "This Email exists already"
+        }, status=400)
+
+    hashed_password = bcrypt.hashpw(json_data['password'].encode('utf-8'), bcrypt.gensalt())
+    user = User.objects.create(
+        first_name=json_data['firstName'],
+        last_name=json_data['lastName'],
+        password=hashed_password, email=json_data['email']
+    )
+    user.save()
+
+    token = createJWT(user)
+    request.session['token'] = token
+    data = serializers.serialize('json', [user])
+    return JsonResponse({
+        "token": token,
+        "user": data[1: -1]
+    })
+
+def login(request):
+    json_data = json.loads(request.body)
+    errors = {}
+    if (User.objects.filter(email=json_data['email']).exists()):
+        user = User.objects.filter(email=json_data['email'])[0]
+        hashed_pass = bcrypt.hashpw(json_data['password'].encode('utf-8'), bcrypt.gensalt())
+        password = user.password[2: -1]
+        if (bcrypt.checkpw(json_data['password'].encode('utf-8'), password.encode())):
+            request.session['id'] = user.id
+            token = createJWT(user)
+            request.session['token'] = token
+            data = serializers.serialize('json', [user])
+
+            return JsonResponse({
+                "token": token,
+                "user": data[1: -1]
+            })
+
+        return JsonResponse({
+            "error": "Password is wrong."
+        }, status=400)
     else:
-        return render(request, 'auth/login.html')
+        return JsonResponse({
+            "error": "This user does not exist."
+        }, status=404)
 
 def success(request):
     if request.session._session:

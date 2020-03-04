@@ -1,6 +1,15 @@
 <template>
   <div class="login-form">
     <v-card class="login-card">
+      <v-alert
+        v-model="showErrorAlert"
+        close-text="Close Alert"
+        dark
+        dismissible
+        type="error"
+      >
+        {{errorMessage}}
+      </v-alert>
       <v-form
         ref="form"
         v-model="valid"
@@ -23,6 +32,7 @@
               :rules="passwordRules"
               prepend-inner-icon="mdi-key"
               label="Password"
+              type="password"
               required
             ></v-text-field>
           </v-col>
@@ -30,7 +40,7 @@
             <v-btn
               :disabled="!valid"
               color="success"
-              @click="login"
+              @click="handleLogin"
             >
               Login
             </v-btn>
@@ -43,6 +53,7 @@
   </div>
 </template>
 <script>
+  import { mapActions, mapGetters } from "vuex";
   export default {
     data: () => ({
       valid: false,
@@ -55,12 +66,29 @@
       passwordRules: [
         v => !!v || 'Password is required'
       ],
+      showErrorAlert: false
     }),
-
+    computed: {
+      ...mapGetters("auth", ["errorMessage"])
+    },
     methods: {
-      login () {
+      ...mapActions("auth", ["login"]),
+      handleLogin () {
+
         if (this.$refs.form.validate()) {
-          this.valid = true
+          this.valid = true;
+          this.login({
+            email: this.email,
+            password: this.password
+          }).then((res) => {
+            if (res.status == 200) {
+              this.$router.push("/")
+            } else {
+              this.showErrorAlert = true;
+            }
+          }).catch(err => {
+            console.log(err)
+          })
         }
       },
     },

@@ -6,12 +6,12 @@ from email_validator import validate_email, EmailNotValidError
 class UserManager(models.Manager):
     def validator(self, postData):
         errors = {}
-        if len(postData['first_name']) < 2:
-            errors['first_name'] = "First name can not be shorter than 2 characters"
+        if len(postData['firstName']) < 2:
+            errors['firstName'] = "First name can not be shorter than 2 characters"
             pass
 
-        if len(postData['last_name']) < 2:
-            errors['last_name'] = "Last name can not be shorter than 2 characters"
+        if len(postData['lastName']) < 2:
+            errors['lastName'] = "Last name can not be shorter than 2 characters"
             pass
 
         if len(postData['email']) == 0:
@@ -27,8 +27,8 @@ class UserManager(models.Manager):
             errors['password'] = "Password is too short!"
             pass
 
-        if (postData['password'] != postData['confirm_password']):
-            errors['confirm_password'] = "Password does not matched!"
+        if (postData['password'] != postData['confirmPassword']):
+            errors['confirmPassword'] = "Password does not matched!"
             pass
 
         return errors

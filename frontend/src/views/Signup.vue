@@ -1,6 +1,15 @@
 <template>
   <div class="register-form">
     <v-card class="register-card">
+      <v-alert
+        v-model="showErrorAlert"
+        close-text="Close Alert"
+        dark
+        dismissible
+        type="error"
+      >
+        {{errorMessage}}
+      </v-alert>
       <v-form
         ref="form"
         v-model="valid"
@@ -52,13 +61,15 @@
                 type="password"
                 label="Confirm Password"
                 required
+                v-on:change="checkPass"
               ></v-text-field>
+              <span v-if="showConfirmError" class="show-error-message">Password does not matched</span>
             </v-col>
             <v-col cols="12">
               <v-btn
                 :disabled="!valid"
                 color="success"
-                @click="register"
+                @click="handleRegister"
               >
                 register
               </v-btn>
@@ -71,6 +82,7 @@
   </div>
 </template>
 <script>
+  import { mapActions, mapGetters } from "vuex";
   export default {
     data: () => ({
       valid: true,
@@ -92,14 +104,43 @@
       ],
       confirmPassword: '',
       showPass: false,
+      showConfirmError: false,
+      showErrorAlert: false
     }),
-
+    computed: {
+      ...mapGetters("auth", ["errorMessage"])
+    },
     methods: {
-      register () {
-        if (this.$refs.form.validate()) {
+      ...mapActions("auth", ["register"]),
+      handleRegister() {
+        if (this.$refs.form.validate() && !this.showConfirmError) {
           this.snackbar = true
+          this.valid = true;
+
+          this.register({
+            email: this.email,
+            firstName: this.firstName,
+            lastName: this.lastName,
+            password: this.password,
+            confirmPassword: this.confirmPassword
+          }).then((res) => {
+            if(res.status == 200) {
+              this.$router.push("/")
+            } else {
+              this.showErrorAlert = true;
+            }
+          }).catch(err => {
+            console.log(err)
+          })
         }
       },
+      checkPass() {
+        if(this.password != this.confirmPassword) {
+          this.showConfirmError = true
+        } else {
+          this.showConfirmError = false
+        }
+      }
     },
   }
 </script>
@@ -123,5 +164,11 @@
   text-decoration: none;
   margin-left: 15px;
   color: #757575;
+}
+.show-error-message {
+  position: absolute;
+  left: 11px;
+  font-size: 12px;
+  color: #ff5252;
 }
 </style>
