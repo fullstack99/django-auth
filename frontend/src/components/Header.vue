@@ -2,12 +2,29 @@
   <nav class="nav-bar">
     <v-navigation-drawer v-model="sidebar" app class="sider-bar">
       <v-list>
-        <v-list-item
-          v-for="item in menuItems"
-          :key="item.title"
-          :to="item.path">
-          <v-list-item-content v-text="item.title"></v-list-item-content>
-        </v-list-item>
+        <v-list-group>
+          <template v-slot:activator>
+            <v-list-item-icon>
+              <v-icon>mdi-account-circle</v-icon>
+            </v-list-item-icon>
+            <v-list-item-title>Users</v-list-item-title>
+          </template>
+
+          <v-list-item-group v-model="item" color="primary">
+            <v-list-item
+              v-for="(item, i) in items"
+              :key="i"
+              @click="handleAction(item.action)"
+            >
+              <v-list-item-icon>
+                <v-icon v-text="item.icon"></v-icon>
+              </v-list-item-icon>
+              <v-list-item-content>
+                <v-list-item-title v-text="item.text"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+          </v-list-item-group>
+        </v-list-group>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar app class="header-bar" dark>
@@ -15,7 +32,7 @@
         <v-app-bar-nav-icon @click="sidebar = !sidebar"></v-app-bar-nav-icon>
       </span>
       <v-spacer></v-spacer>
-      <v-toolbar-items>
+      <v-toolbar-items class="hidden-xs-only">
         <v-btn icon @click="showList=!showList">
           <v-avatar color="indigo">
             <v-icon dark>mdi-account-circle</v-icon>
@@ -31,7 +48,7 @@
               <v-list-item
                 v-for="(item, i) in items"
                 :key="i"
-                @click="showList=!showList"
+                @click="handleAction(item.action)"
               >
                 <v-list-item-icon>
                   <v-icon v-text="item.icon"></v-icon>
@@ -49,6 +66,7 @@
 </template>
 
 <script>
+import { mapActions} from "vuex";
 export default {
   name: "Header",
   data() {
@@ -57,13 +75,23 @@ export default {
       menuItems: [
         { title: "User", path: "/" }
       ],
-      item: 1,
+      item: { text: 'Profile', icon: 'mdi-account', action: 'gotoProfile' },
       items: [
-        { text: 'Profile', icon: 'mdi-account' },
-        { text: 'Logout', icon: 'mdi-logout' },
+        { text: 'Profile', icon: 'mdi-account', action: 'gotoProfile' },
+        { text: 'Logout', icon: 'mdi-logout', action: 'logout' },
       ],
       showList: false
     };
+  },
+  methods: {
+    ...mapActions("auth", ["logout"]),
+    handleAction(actionName) {
+      this.showList = !this.showList;
+      if (actionName == 'logout') {
+        this.logout();
+        this.$router.push("/login")
+      }
+    }
   }
 };
 </script>

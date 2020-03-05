@@ -1,11 +1,5 @@
 <template>
-  <Header/>
+  <v-container>
+    <h2>Dahsboard page</h2>
+  </v-container>
 </template>
-<script>
-import Header from "@/components/Header.vue";
-export default {
-  components: {
-    Header
-  }
-}
-</script>

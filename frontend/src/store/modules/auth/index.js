@@ -6,7 +6,8 @@ const initialState = {
   user: {},
   error: null,
   status: null,
-  authenticated: false
+  authenticated: false,
+  token: null
 };
 
 export default {

@@ -30,6 +30,14 @@ const mutations = {
     state.status = data.status;
     state.authenticated = false;
   },
-}
+
+  [types.AUTH_LOGOUT](state) {
+    state.user = {};
+    state.error = null;
+    state.status = null;
+    state.authenticated = false;
+    state.token = null;
+  }
+};
 
 export default mutations;
