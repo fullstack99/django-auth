@@ -15,14 +15,34 @@
         <v-app-bar-nav-icon @click="sidebar = !sidebar"></v-app-bar-nav-icon>
       </span>
       <v-spacer></v-spacer>
-      <v-toolbar-items class="hidden-xs-only">
-        <v-btn
-          text
-          v-for="item in menuItems"
-          :key="item.title"
-          :to="item.path">
-          {{ item.title }}
+      <v-toolbar-items>
+        <v-btn icon @click="showList=!showList">
+          <v-avatar color="indigo">
+            <v-icon dark>mdi-account-circle</v-icon>
+          </v-avatar>
         </v-btn>
+        <v-card
+          class="mx-auto user-action-list-card"
+          width="150"
+          v-show="showList"
+        >
+          <v-list flat>
+            <v-list-item-group v-model="item" color="primary">
+              <v-list-item
+                v-for="(item, i) in items"
+                :key="i"
+                @click="showList=!showList"
+              >
+                <v-list-item-icon>
+                  <v-icon v-text="item.icon"></v-icon>
+                </v-list-item-icon>
+                <v-list-item-content>
+                  <v-list-item-title v-text="item.text"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </v-list-item-group>
+          </v-list>
+        </v-card>
       </v-toolbar-items>
     </v-app-bar>
   </nav>
@@ -36,7 +56,13 @@ export default {
       sidebar: false, // Hide mobile side menu by default
       menuItems: [
         { title: "User", path: "/" }
-      ]
+      ],
+      item: 1,
+      items: [
+        { text: 'Profile', icon: 'mdi-account' },
+        { text: 'Logout', icon: 'mdi-logout' },
+      ],
+      showList: false
     };
   }
 };
@@ -61,6 +87,11 @@ export default {
 .logo-img {
   height: 60px;
   max-height: 100%;
+}
+.user-action-list-card {
+  position: absolute !important;
+  top: 64px;
+  right: 1px;
 }
 @media screen and (min-width: 1000px) {
   .v-navigation-drawer {
