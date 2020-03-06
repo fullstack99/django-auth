@@ -82,67 +82,67 @@
   </div>
 </template>
 <script>
-  import { mapActions, mapGetters } from "vuex";
-  export default {
-    data: () => ({
-      valid: true,
-      firstName: '',
-      lastName: '',
-      nameRules: [
-        v => !!v || 'Password is required',
-        v => (v && v.length >= 2) || 'Password must be more than 2 characters',
-      ],
-      email: '',
-      emailRules: [
-        v => !!v || 'E-mail is required',
-        v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
-      ],
-      password: '',
-      passwordRules: [
-        v => !!v || 'Password is required',
-        v => (v && v.length >= 8) || 'Password must be more than 8 characters',
-      ],
-      confirmPassword: '',
-      showPass: false,
-      showConfirmError: false,
-      showErrorAlert: false
-    }),
-    computed: {
-      ...mapGetters("auth", ["errorMessage"])
-    },
-    methods: {
-      ...mapActions("auth", ["register"]),
-      handleRegister() {
-        if (this.$refs.form.validate() && !this.showConfirmError) {
-          this.snackbar = true
-          this.valid = true;
+import { mapActions, mapGetters } from "vuex";
+export default {
+  data: () => ({
+    valid: true,
+    firstName: '',
+    lastName: '',
+    nameRules: [
+      v => !!v || 'Password is required',
+      v => (v && v.length >= 2) || 'Password must be more than 2 characters',
+    ],
+    email: '',
+    emailRules: [
+      v => !!v || 'E-mail is required',
+      v => /.+@.+\..+/.test(v) || 'E-mail must be valid',
+    ],
+    password: '',
+    passwordRules: [
+      v => !!v || 'Password is required',
+      v => (v && v.length >= 8) || 'Password must be more than 8 characters',
+    ],
+    confirmPassword: '',
+    showPass: false,
+    showConfirmError: false,
+    showErrorAlert: false
+  }),
+  computed: {
+    ...mapGetters("auth", ["errorMessage"])
+  },
+  methods: {
+    ...mapActions("auth", ["register"]),
+    handleRegister() {
+      if (this.$refs.form.validate() && !this.showConfirmError) {
+        this.snackbar = true
+        this.valid = true;
 
-          this.register({
-            email: this.email,
-            firstName: this.firstName,
-            lastName: this.lastName,
-            password: this.password,
-            confirmPassword: this.confirmPassword
-          }).then((res) => {
-            if(res.status == 200) {
-              this.$router.push("/")
-            } else {
-              this.showErrorAlert = true;
-            }
-          }).catch(err => {
-            console.log(err)
-          })
-        }
-      },
-      checkPass() {
-        if(this.password != this.confirmPassword) {
-          this.showConfirmError = true
-        } else {
-          this.showConfirmError = false
-        }
+        this.register({
+          email: this.email,
+          firstName: this.firstName,
+          lastName: this.lastName,
+          password: this.password,
+          confirmPassword: this.confirmPassword
+        }).then((res) => {
+          if(res.status == 200) {
+            this.$router.push("/")
+          } else {
+            this.showErrorAlert = true;
+          }
+        }).catch(err => {
+          console.log(err)
+        })
       }
     },
-  }
+    checkPass() {
+      if(this.password != this.confirmPassword) {
+        this.showConfirmError = true
+      } else {
+        this.showConfirmError = false
+      }
+    }
+  },
+}
 </script>
 <style scoped>
 .register-form {
